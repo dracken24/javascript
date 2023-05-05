@@ -1,22 +1,20 @@
 console.log("Welcome to la calculatoration.");
 
-let str = "Choose operation type.\n\n";
-let add = "For adition,                enter  1\n", sub = "For substraction,     enter  2\n";
-let mul = "For multiplication,  enter  3\n", div = "For division,              enter  4\n\n";
-let qit = "For quit,                     enter  0";
-
 main();
 
 function main() {
+	let str = "Choose operation type.\n\n";
+	let add = "For adition,                enter  1\n", sub = "For substraction,     enter  2\n";
+	let mul = "For multiplication,  enter  3\n", div = "For division,              enter  4\n\n";
+	let qit = "For quit,                     enter  0";
+
 	while (true) {
 		let ret = Number(prompt(str + add + sub + mul + div + qit, "Enter your choice here."))
 		if (ret < 0 || ret > 4){
 			alert("Wrong number: " + ret);
 			continue;
 		}
-		else if (ret == 0) {
-			break; // quit
-		}
+		else if (ret == 0) { break; } // quit
 
 		ChooseAction(ret);
 	}

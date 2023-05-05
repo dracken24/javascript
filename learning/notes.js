@@ -60,9 +60,11 @@ alert("Age * 2 = " + (age * 2) + " ans");
 
 //******************************** 	Event functions	 ********************************/
 
-let evFunct = function() {
-	console.log("This is like a pointer function");
+let evFunct = function(str) {
+	console.log(str);
 }
+// or
+// let evFunct = (str) => console.log(str);
 
 if (confirm("Dou you want use an event function?") == true) {
 	evFunct();
@@ -71,15 +73,15 @@ if (confirm("Dou you want use an event function?") == true) {
 // auto execute event function
 // (function() { console.log("This is like a pointer function") })();
 
-//************************************ 	array	 ************************************/
-// like a vector in c++
+//************************************ 	...	 ************************************/
 
-let tab = ["Banana", "Apple", "Bacon"];
-console.log("\nFirst:");
-for (let i = 0; i < tab.length; i++) {
-	console.log(tab[i][0]); console.log(tab[i]);
+function add(...nbrs) {
+	var ret = 0;
+	for (const key in nbrs) {
+		ret += nbrs[key];
+	}
+
+	return ret;
 }
 
-console.log('\nSecond:');
-tab.push("Ananas");
-console.log(tab.join("\n"));
+console.log(add(5, 10, 25).toString());
