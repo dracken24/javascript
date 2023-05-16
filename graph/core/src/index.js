@@ -4,12 +4,47 @@ import player2 from './assets/bar_red_00.png';
 import bl from './assets/ball_red_00.png';
 import background from './assets/terrain_pong_01.png';
 
-let p1;
-let p2;
-let ball;
+//--------------------------------------------- class ------------------------------------------------//
 
-//----------------------------------------- catch key events ------------------------------------------//
-// Add event listener on keydown
+class Vec2 {
+	constructor(x, y) {
+		this.x = x;
+		this.y = y;
+	}
+}
+
+class Rect {
+	constructor(x, y, width, height) {
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.height = height;
+	}
+}
+
+class HitPoint {
+	constructor(rect1, rect2, pos, side) {
+		this.rect1 = rect1;
+		this.rect2 = rect2;
+		this.pos = pos;
+		this.side = side;
+	}
+}
+
+class Player {
+	constructor(hit, imgLink, obj) {
+		this.hitPoint = hit;
+		this.imgLink = imgLink;
+		this.obj = obj;
+	}
+}
+
+//--------------------------------------------- Vars -------------------------------------------------//
+
+let p1 = new Player([0, 0], player1, 0);
+let p2 = new Player([0, 0], player2, 0);
+
+let ball = new Player([0, 0], player2, 0);
 
 let ctUpP1 = 0;
 let ctDownP1 = 0;
@@ -17,6 +52,9 @@ let ctUpP2 = 0;
 let ctDownP2 = 0;
 
 let ctBall = -1;
+
+//----------------------------------------- catch key events ------------------------------------------//
+// Add event listener on keydown
 
 document.addEventListener('keydown', (event) => {
 	MovePlayerDown(event);
@@ -36,8 +74,8 @@ class MyGame extends Phaser.Scene
 
 	preload ()
 	{
-		this.load.image('p1', player1);
-		this.load.image('p2', player2);
+		this.load.image('p1', p1.imgLink);
+		this.load.image('p2', p1.imgLink);
 		this.load.image('ball', bl);
 		this.load.image('background', background);
 	}
@@ -46,11 +84,11 @@ class MyGame extends Phaser.Scene
 	{
 		const bg = this.add.image(600, 400, 'background');
 
-		p1 = this.add.image(1170, 400, 'p1');
+		p1.obj = this.add.image(1170, 400, 'p1');
 
-		p2 = this.add.image(30, 400, 'p2');
+		p2.obj = this.add.image(30, 400, 'p2');
 
-		ball = this.add.image(600, 400, 'ball');
+		ball.obj = this.add.image(600, 400, 'ball');
 		// ball.setCollideWorldBounds(true);	// rebound in screen side
 
 		// this.tweens.add({
@@ -89,9 +127,9 @@ const config = {
 	scene: MyGame
 };
 
-//---------------------------------------------- Execution ----------------------------------------------//
-
 const game = new Phaser.Game(config);
+
+//---------------------------------------------- Execution ----------------------------------------------//
 
 function MovePlayerDown(event) {
 	const keyPressed = event.key;
@@ -143,36 +181,47 @@ function MovePlayerUp(event) {
 
 function BallControl() {
 	if (ctBall == 1) {
-		ball.x -= 2;
+		ball.obj.x -= 2;
 	}
 	else if (ctBall == -1) {
-		ball.x += 2;
+		ball.obj.x += 2;
 	}
 }
 
 function ControlP1() {
 	// p1 up down
-	if (ctUpP1 == 1 && p1.y > 84) {
-		p1.y -= 2;
+	if (ctUpP1 == 1 && p1.obj.y > 84) {
+		p1.obj.y -= 2;
 	}
-	if (ctDownP1 == 1 && p1.y < 717) {
-		p1.y += 2;
+	if (ctDownP1 == 1 && p1.obj.y < 717) {
+		p1.obj.y += 2;
 	}
 }
 
 function ControlP2() {
 	// p2 up down
-	if (ctUpP2 == 1 && p2.y > 84) {
-		p2.y -= 2;
+	if (ctUpP2 == 1 && p2.obj.y > 84) {
+		p2.obj.y -= 2;
 	}
-	if (ctDownP2 == 1 && p2.y < 717) {
-		p2.y += 2;
+	if (ctDownP2 == 1 && p2.obj.y < 717) {
+		p2.obj.y += 2;
 	}
 }
 
 function CheckCollision() {
-	if (Phaser.Geom.Intersects.RectangleToRectangle(p1.getBounds(), ball.getBounds())) {
+	if (Phaser.Geom.Intersects.RectangleToRectangle(ball.obj.getBounds(), p1.obj.getBounds())) {
 		// Collision detected player1 and ball
+		
+		p1.hitPoint = Phaser.Geom.Intersects.GetRectangleToRectangle(p1.obj.getBounds(), ball.obj.getBounds());
+		// p1.hitPoint.y = Phaser.Geom.Intersects.GetRectangleToRectangle(p1.obj.getBounds(), ball.obj.getBounds()).y + ball.obj.height / 2;
+		// console.log(hit.y);
+		console.log("hitx 0: " + p1.hitPoint[0].x);
+		console.log("hity 0: " + p1.hitPoint[0].y);
+		console.log("hitx 1: " + p1.hitPoint[1].x);
+		console.log("hity 1: " + p1.hitPoint[1].y);
+		// console.log(Phaser.Geom.Intersects.GetRectangleIntersection(ball.getBounds(), p1.getBounds()));
+
+		
 		console.log('Collision player1 and ball');
 		if (ctBall == -1)
 		{
@@ -183,7 +232,7 @@ function CheckCollision() {
 			}
 		}
 	}
-	else if (Phaser.Geom.Intersects.RectangleToRectangle(p2.getBounds(), ball.getBounds())) {
+	else if (Phaser.Geom.Intersects.RectangleToRectangle(p2.obj.getBounds(), ball.obj.getBounds())) {
 		// Collision detected player2 and ball
 		console.log('Collision player2 and ball');
 		if (ctBall == 1)
@@ -197,16 +246,16 @@ function CheckCollision() {
 	}
 
 	// if sombody put a goal
-	if (ball.x > 1300)
+	if (ball.obj.x > 1300)
 	{
-		console.log('Player2 Win this round');
+		// console.log('Player2 Win this round');
 		ctBall = ctBall * -1;
-		ball.x = 600;
+		ball.obj.x = 600;
 	}
-	else if (ball.x < -100)
+	else if (ball.obj.x < -100)
 	{
-		console.log('Player1 Win this round');
+		// console.log('Player1 Win this round');
 		ctBall = ctBall * -1;
-		ball.x = 600;
+		ball.obj.x = 600;
 	}
 }
